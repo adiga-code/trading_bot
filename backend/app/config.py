@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -14,6 +15,13 @@ class Settings(BaseSettings):
     admin_ids: list[int] = []
     vip_channel_id: int | None = None  # id канала (-100...), куда бот выдаёт доступ
     mini_app_url: str = ""
+
+    @field_validator('vip_channel_id', mode='before')
+    @classmethod
+    def parse_vip_channel_id(cls, v):
+        if v == '' or v is None:
+            return None
+        return int(v) if isinstance(v, str) else v
 
     # Платёжные шлюзы
     gate2328_api_key: str = ""
