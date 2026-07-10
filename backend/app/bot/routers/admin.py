@@ -209,7 +209,7 @@ async def reply_send(message: Message, state: FSMContext) -> None:
     try:
         await message.bot.send_message(
             uid,
-            f"💬 <b>Ответ поддержки:</b>\n\n{message.text}",
+            f"💬 <b>Сообщение от Forex Trd'K:</b>\n\n{message.text}",
             parse_mode="HTML",
         )
         await message.answer(f"✅ Отправлено пользователю <code>{uid}</code>", parse_mode="HTML")
@@ -254,21 +254,3 @@ async def pocket_send(message: Message, state: FSMContext, session) -> None:
             await repo.fulfill_pocket_order(session, order)
             break
     await message.answer(f"✅ Данные PocketOption отправлены пользователю <code>{uid}</code>", parse_mode="HTML")
-
-
-# ── Ответ реплаем на пересланное сообщение поддержки ─────────────────────────
-
-@router.message(F.reply_to_message, F.text)
-async def reply_to_forwarded(message: Message, session) -> None:
-    uid = await repo.user_by_forwarded_msg(session, message.reply_to_message.message_id)
-    if not uid:
-        return
-    try:
-        await message.bot.send_message(
-            uid,
-            f"💬 <b>Ответ поддержки:</b>\n\n{message.text}",
-            parse_mode="HTML",
-        )
-        await message.answer("✅ Ответ отправлен.")
-    except Exception as exc:
-        await message.answer(f"❌ Ошибка: {exc}")

@@ -217,7 +217,7 @@ class MessageRequest(BaseModel):
 async def message_user(user_id: int, body: MessageRequest):
     bot = runtime.get_bot()
     try:
-        await bot.send_message(user_id, f"💬 <b>Ответ поддержки:</b>\n\n{body.text}", parse_mode="HTML")
+        await bot.send_message(user_id, f"💬 <b>Сообщение от Forex Trd'K:</b>\n\n{body.text}", parse_mode="HTML")
     except Exception as exc:
         raise HTTPException(status_code=502, detail=f"Не удалось отправить: {exc}")
     return {"ok": True}

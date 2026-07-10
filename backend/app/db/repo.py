@@ -14,7 +14,6 @@ from app.db.models import (
     Purchase,
     Subscription,
     SubscriptionStatus,
-    SupportMessage,
     User,
     utcnow,
 )
@@ -260,18 +259,3 @@ async def fulfill_pocket_order(session: AsyncSession, order: PocketOrder) -> Non
     order.status = PocketOrderStatus.FULFILLED
     order.fulfilled_at = utcnow()
     await session.commit()
-
-
-# ── Поддержка ─────────────────────────────────────────────────────────────────
-
-async def save_support_message(session: AsyncSession, user_id: int, forwarded_msg_id: int) -> None:
-    session.add(SupportMessage(user_id=user_id, forwarded_msg_id=forwarded_msg_id))
-    await session.commit()
-
-
-async def user_by_forwarded_msg(session: AsyncSession, forwarded_msg_id: int) -> int | None:
-    res = await session.execute(
-        select(SupportMessage.user_id).where(SupportMessage.forwarded_msg_id == forwarded_msg_id)
-    )
-    row = res.first()
-    return row[0] if row else None
