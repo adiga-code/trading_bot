@@ -12,13 +12,39 @@ type AdminUser = {
   created_at: string
 }
 
+type UserDetail = AdminUser & {
+  username: string | null
+  subscription: {
+    plan_name: string
+    status: string
+    started_at: string
+    expires_at: string | null
+  } | null
+  purchases: {
+    id: number
+    plan_name: string
+    amount_usd: number
+    created_at: string
+  }[]
+}
+
 export function Users({ config }: { config: AppConfig | null }) {
   const toast = useToast()
   const [search, setSearch] = useState('')
   const [users, setUsers] = useState<AdminUser[]>([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<AdminUser | null>(null)
+  const [detail, setDetail] = useState<UserDetail | null>(null)
   const [messageText, setMessageText] = useState('')
+
+  useEffect(() => {
+    setDetail(null)
+    if (!selected) return
+    api
+      .get<UserDetail>(`/api/admin/users/${selected.id}`)
+      .then(setDetail)
+      .catch(() => setDetail(null))
+  }, [selected])
 
   const load = useCallback(async (q: string) => {
     setLoading(true)
@@ -41,7 +67,7 @@ export function Users({ config }: { config: AppConfig | null }) {
     try {
       await api.post(`/api/admin/users/${selected.id}/vip`, { plan_key: planKey })
       hapticNotify('success')
-      toast('VIP выдан, инвайт отправлен')
+      toast('VIP выдан — не забудь добавить в канал')
       setSelected(null)
       load(search)
     } catch (e) {
@@ -120,7 +146,41 @@ export function Users({ config }: { config: AppConfig | null }) {
             <div className="font-display text-[16px] font-bold">
               {selected.display_name} {selected.is_vip && '💎'}
             </div>
-            <div className="tnum mt-0.5 text-[12px] text-t3">ID {selected.id}</div>
+            <div className="tnum mt-0.5 text-[12px] text-t3">
+              ID {selected.id}
+              {detail?.username && <> · @{detail.username}</>}
+            </div>
+
+            <div className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-t3">Подписка</div>
+            {detail === null ? (
+              <div className="skeleton mt-2 h-12 rounded-el" />
+            ) : detail.subscription ? (
+              <div className="mt-2 rounded-el border border-stroke bg-card2 px-3 py-2.5">
+                <div className="text-[13px] font-semibold">
+                  {detail.subscription.plan_name}
+                  <span className={detail.subscription.status === 'active' ? 'ml-2 text-up' : 'ml-2 text-down'}>
+                    {detail.subscription.status === 'active' ? '● активна' : '● истекла'}
+                  </span>
+                </div>
+                <div className="tnum mt-0.5 text-[11.5px] text-t3">
+                  с {fmtDate(detail.subscription.started_at)} ·{' '}
+                  {detail.subscription.expires_at ? `до ${fmtDate(detail.subscription.expires_at)}` : 'навсегда'}
+                </div>
+                {detail.purchases.length > 0 && (
+                  <div className="tnum mt-1 text-[11.5px] text-t3">
+                    Покупок: {detail.purchases.length} · последняя {fmtDate(detail.purchases[0].created_at)} (
+                    {detail.purchases[0].amount_usd.toFixed(0)}$)
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="mt-2 rounded-el border border-stroke bg-card2 px-3 py-2.5 text-[12.5px] text-t3">
+                Подписки нет
+                {detail.purchases.length > 0 && (
+                  <span className="tnum"> · покупок: {detail.purchases.length}</span>
+                )}
+              </div>
+            )}
 
             <div className="mt-4 text-[11px] font-semibold uppercase tracking-wide text-t3">
               {selected.is_vip ? 'VIP управление' : 'Выдать VIP'}
@@ -141,7 +201,7 @@ export function Users({ config }: { config: AppConfig | null }) {
                 onClick={revokeVip}
                 className="mt-2 w-full rounded-el border border-down/40 bg-down/10 py-2 text-[12.5px] font-semibold text-down"
               >
-                🚫 Снять VIP и убрать из канала
+                🚫 Снять VIP (из канала убери вручную)
               </button>
             )}
 

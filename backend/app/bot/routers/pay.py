@@ -55,37 +55,6 @@ async def pay_crypto(query: CallbackQuery, session) -> None:
     )
 
 
-@router.callback_query(F.data.startswith("pay:cryptopay:"))
-async def pay_cryptopay(query: CallbackQuery, session) -> None:
-    # pay:cryptopay:{type}:{plan}
-    await query.answer()
-    parts = query.data.split(":")
-    if len(parts) != 4:
-        return
-    _, _, product_type, plan_key = parts
-
-    await query.message.edit_text("⏳ <b>Создаём счёт в Crypto Bot…</b>", parse_mode="HTML")
-    try:
-        payment, invoice = await payment_service.create_cryptopay_invoice(
-            session,
-            user_id=query.from_user.id,
-            product_type=product_type,
-            plan_key=plan_key,
-        )
-    except GatewayError as exc:
-        await query.message.edit_text(
-            f"❌ <b>Ошибка Crypto Bot:</b>\n<code>{exc}</code>",
-            reply_markup=keyboards.back_button(), parse_mode="HTML",
-        )
-        return
-
-    await query.message.edit_text(
-        texts.cryptopay_invoice_text(payment.plan_name, payment.amount_usd),
-        reply_markup=keyboards.invoice_kb(invoice.pay_url),
-        parse_mode="HTML",
-    )
-
-
 @router.callback_query(F.data.startswith("pay:stars:"))
 async def pay_stars(query: CallbackQuery) -> None:
     # pay:stars:{type}:{plan}

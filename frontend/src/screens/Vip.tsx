@@ -64,9 +64,9 @@ export function Vip({ config, onBuy }: { config: AppConfig | null; onBuy: (p: Pa
               <div className="text-[12px] font-semibold uppercase tracking-wide text-t3">{periodLabel(p)}</div>
               <div className="mt-1 flex items-baseline gap-2">
                 <span className={`tnum font-display text-[26px] font-extrabold ${hot ? 'text-gold' : 'text-t1'}`}>
-                  ${p.price_usd.toFixed(0)}
+                  {p.price_usd.toFixed(0)}$
                 </span>
-                <span className="tnum text-[13px] text-t3 line-through">${p.old_price_usd.toFixed(0)}</span>
+                <span className="tnum text-[13px] text-t3 line-through">{p.old_price_usd.toFixed(0)}$</span>
                 <span className="tnum rounded-md bg-up/10 px-1.5 py-0.5 text-[11px] font-bold text-up">
                   −{discount}%
                 </span>

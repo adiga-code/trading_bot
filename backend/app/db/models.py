@@ -48,7 +48,7 @@ class Payment(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(BigInteger, ForeignKey("users.id"), index=True)
-    gateway: Mapped[str] = mapped_column(String(16))          # gate2328 | cryptopay | stars
+    gateway: Mapped[str] = mapped_column(String(16))          # gate2328 | stars
     external_id: Mapped[str] = mapped_column(String(128), index=True)
     product_type: Mapped[str] = mapped_column(String(8))      # vip | pocket
     plan_key: Mapped[str] = mapped_column(String(16))
@@ -81,7 +81,7 @@ class SubscriptionStatus:
 
 
 class Subscription(Base):
-    """VIP-подписка: автовыдача инвайта и автокик по истечении."""
+    """VIP-подписка: срок хранится в БД, доступ в канал выдаёт/забирает админ вручную."""
 
     __tablename__ = "subscriptions"
 

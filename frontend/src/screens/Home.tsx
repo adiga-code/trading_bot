@@ -79,7 +79,7 @@ export function Home({
             <Arrow />
           </div>
           <div className="mt-2 font-display text-[17px] font-bold">💎 VIP Канал</div>
-          <div className="mt-0.5 text-[12.5px] text-t2">Сигналы с Win Rate 68.9% · от $45/мес</div>
+          <div className="mt-0.5 text-[12.5px] text-t2">Сигналы с Win Rate 68.9% · от 45$/мес</div>
         </button>
 
         <button
@@ -100,7 +100,7 @@ export function Home({
             <Arrow />
           </div>
           <div className="mt-2 font-display text-[17px] font-bold">🏦 Pocket Option</div>
-          <div className="mt-0.5 text-[12.5px] text-t2">Платишь $65 → получаешь $87 на счёте</div>
+          <div className="mt-0.5 text-[12.5px] text-t2">Платишь 65$ → получаешь 87$ на счёте</div>
         </button>
       </div>
 

@@ -5,21 +5,35 @@ import logging
 
 from aiogram import Bot
 
-from app.config import get_settings
+from app.bot import keyboards
 from app.db import repo
-from app.db.models import Payment, PaymentStatus
+from app.db.models import Payment, PaymentStatus, utcnow
 from app.plans import POCKET_TIERS
 from app.services import subscriptions
+from app.services.subscriptions import notify_admins
 
 logger = logging.getLogger(__name__)
 
+GATEWAY_LABELS = {"gate2328": "криптовалюта (2328.io)", "stars": "Telegram Stars ⭐️"}
 
-async def notify_admins(bot: Bot, text: str) -> None:
-    for admin_id in get_settings().admin_ids:
-        try:
-            await bot.send_message(admin_id, text, parse_mode="HTML")
-        except Exception as exc:
-            logger.warning("notify admin %s: %s", admin_id, exc)
+
+def _buyer_card(payment: Payment, user) -> str:
+    """Полная карточка покупателя для уведомления админу."""
+    lines = []
+    if user:
+        lines.append(f"👤 Имя: {user.display_name}")
+        if user.username:
+            lines.append(f"🔗 Юзернейм: @{user.username}")
+    else:
+        lines.append("👤 Имя: неизвестно")
+    lines.append(f"🆔 Telegram ID: <code>{payment.user_id}</code>")
+    lines.append(f"📦 Товар: {payment.plan_name}")
+    lines.append(f"💵 Цена: <b>{payment.amount_usd:.0f}$</b>")
+    lines.append(f"💳 Оплата: {GATEWAY_LABELS.get(payment.gateway, payment.gateway)}")
+    if payment.external_id:
+        lines.append(f"🧾 Счёт: <code>{payment.external_id}</code>")
+    lines.append(f"📅 Дата: {utcnow():%d.%m.%Y %H:%M} UTC")
+    return "\n".join(lines)
 
 
 async def confirm_payment(bot: Bot, session, payment: Payment) -> None:
@@ -38,16 +52,14 @@ async def confirm_payment(bot: Bot, session, payment: Payment) -> None:
     )
 
     user = await repo.get_user(session, payment.user_id)
-    who = user.display_name if user else f"ID:{payment.user_id}"
 
     if payment.product_type == "vip":
         await subscriptions.grant_vip(bot, session, payment.user_id, payment.plan_key)
         await notify_admins(
             bot,
-            f"✅ <b>Оплата подтверждена — VIP выдан автоматически</b>\n\n"
-            f"👤 {who}\n🆔 <code>{payment.user_id}</code>\n"
-            f"📦 {payment.plan_name} — <b>${payment.amount_usd:.0f}</b>\n"
-            f"💳 {payment.gateway} · счёт <code>{payment.external_id}</code>",
+            "✅ <b>Куплена VIP-подписка — выдай доступ в канал</b>\n\n"
+            + _buyer_card(payment, user),
+            reply_markup=keyboards.admin_notify_actions(payment.user_id),
         )
     else:
         tier_index = int(payment.plan_key) if payment.plan_key.isdigit() else 0
@@ -71,8 +83,8 @@ async def confirm_payment(bot: Bot, session, payment: Payment) -> None:
             pass
         await notify_admins(
             bot,
-            f"🏦 <b>Оплачен заказ PocketOption — нужна выдача</b>\n\n"
-            f"👤 {who}\n🆔 <code>{payment.user_id}</code>\n"
-            f"📦 {payment.plan_name} — <b>${payment.amount_usd:.0f}</b>\n"
-            f"➡️ Выдай аккаунт через админку или /admin в боте.",
+            "🏦 <b>Оплачен заказ PocketOption — нужна выдача</b>\n\n"
+            + _buyer_card(payment, user)
+            + "\n\n➡️ Выдай аккаунт через админку или /admin в боте.",
+            reply_markup=keyboards.admin_notify_actions(payment.user_id),
         )

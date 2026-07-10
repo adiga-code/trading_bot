@@ -166,6 +166,26 @@ async def list_purchases(session: AsyncSession, limit: int = 100, offset: int = 
     return [(p, u) for p, u in res.all()]
 
 
+async def latest_subscription(session: AsyncSession, user_id: int) -> Subscription | None:
+    """Последняя подписка юзера независимо от статуса (для карточки в админке)."""
+    res = await session.execute(
+        select(Subscription)
+        .where(Subscription.user_id == user_id)
+        .order_by(Subscription.id.desc())
+    )
+    return res.scalars().first()
+
+
+async def user_purchases(session: AsyncSession, user_id: int, limit: int = 20) -> list[Purchase]:
+    res = await session.execute(
+        select(Purchase)
+        .where(Purchase.user_id == user_id)
+        .order_by(Purchase.created_at.desc())
+        .limit(limit)
+    )
+    return list(res.scalars())
+
+
 async def purchases_stats(session: AsyncSession, since: datetime | None = None) -> tuple[int, float]:
     """(количество, сумма USD) покупок, опционально с даты."""
     q = select(func.count(Purchase.id), func.coalesce(func.sum(Purchase.amount_usd), 0.0))

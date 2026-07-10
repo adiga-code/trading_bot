@@ -11,7 +11,7 @@ export function fmtPct(p: number | null | undefined): string {
 }
 
 export function fmtUsd(v: number): string {
-  return `$${v.toLocaleString('en-US', { maximumFractionDigits: 0 })}`
+  return `${v.toLocaleString('en-US', { maximumFractionDigits: 0 })}$`
 }
 
 /** '45.00000000' → '45' */

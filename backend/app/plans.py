@@ -39,7 +39,7 @@ class PocketTier:
 
     @property
     def name(self) -> str:
-        return f"PocketOption ${self.pay_usd:.0f}→${self.balance_usd:.0f}"
+        return f"PocketOption {self.pay_usd:.0f}$→{self.balance_usd:.0f}$"
 
 
 POCKET_TIERS: list[PocketTier] = [

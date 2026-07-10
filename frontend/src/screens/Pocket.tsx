@@ -37,12 +37,12 @@ export function Pocket({ config, onBuy }: { config: AppConfig | null; onBuy: (p:
               <div className="flex items-center gap-4">
                 <div>
                   <div className="text-[11px] uppercase tracking-wide text-t3">Платите</div>
-                  <div className="tnum font-display text-[22px] font-extrabold">${t.pay_usd.toFixed(0)}</div>
+                  <div className="tnum font-display text-[22px] font-extrabold">{t.pay_usd.toFixed(0)}$</div>
                 </div>
                 <div className="text-xl text-t3">→</div>
                 <div>
                   <div className="text-[11px] uppercase tracking-wide text-t3">Получаете</div>
-                  <div className="tnum font-display text-[22px] font-extrabold text-up">${t.balance_usd.toFixed(0)}</div>
+                  <div className="tnum font-display text-[22px] font-extrabold text-up">{t.balance_usd.toFixed(0)}$</div>
                 </div>
               </div>
               <div className="mt-2.5 inline-block rounded-md bg-up/10 px-2 py-0.5 text-[11.5px] font-semibold text-up">

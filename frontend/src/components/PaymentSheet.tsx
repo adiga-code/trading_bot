@@ -80,24 +80,6 @@ export function PaymentSheet({
     }
   }
 
-  const payCryptoBot = async () => {
-    haptic('medium')
-    setLoadingText('Создаём счёт в Crypto Bot…')
-    setStep('loading')
-    try {
-      const res = await api.post<{ bot_invoice_url: string }>('/api/cryptopay', {
-        type: product.type,
-        plan: product.plan,
-      })
-      if (!res.bot_invoice_url) throw new Error('Crypto Bot недоступен')
-      openExternal(res.bot_invoice_url)
-      toast('Счёт открыт в @CryptoBot')
-      onClose()
-    } catch (e) {
-      fail(e instanceof Error ? e.message : 'Ошибка Crypto Bot')
-    }
-  }
-
   const payStars = async () => {
     haptic('medium')
     setLoadingText('Готовим счёт Stars…')
@@ -152,17 +134,6 @@ export function PaymentSheet({
                 <span className="flex-1">
                   <span className="block text-[14px] font-semibold">Криптовалюта</span>
                   <span className="block text-[12px] text-t3">BTC, ETH, USDT, TON, SOL и другие</span>
-                </span>
-                <Chevron />
-              </button>
-              <button
-                onClick={payCryptoBot}
-                className="mt-2.5 flex w-full items-center gap-3 rounded-card border border-stroke bg-card2 p-3.5 text-left active:scale-[0.99]"
-              >
-                <span className="flex h-10 w-10 items-center justify-center rounded-el bg-[#2AABEE]/15 text-lg">🤖</span>
-                <span className="flex-1">
-                  <span className="block text-[14px] font-semibold">Crypto Bot</span>
-                  <span className="block text-[12px] text-t3">Оплата внутри Telegram через @CryptoBot</span>
                 </span>
                 <Chevron />
               </button>

@@ -44,7 +44,7 @@ def back_button(cb: str = "close") -> InlineKeyboardMarkup:
 def vip_plans_kb(with_back: bool = False) -> InlineKeyboardMarkup:
     rows = [
         [InlineKeyboardButton(
-            text=f"{p.name} — ${p.price_usd:.0f}",
+            text=f"{p.name} — {p.price_usd:.0f}$",
             callback_data=f"vip:{p.key}",
         )]
         for p in VIP_PLANS.values()
@@ -57,7 +57,7 @@ def vip_plans_kb(with_back: bool = False) -> InlineKeyboardMarkup:
 def pocket_tiers_kb(with_back: bool = False) -> InlineKeyboardMarkup:
     rows = [
         [InlineKeyboardButton(
-            text=f"${t.pay_usd:.0f} → баланс ${t.balance_usd:.0f}",
+            text=f"{t.pay_usd:.0f}$ → баланс {t.balance_usd:.0f}$",
             callback_data=f"pocket:{t.index}",
         )]
         for t in POCKET_TIERS
@@ -68,7 +68,7 @@ def pocket_tiers_kb(with_back: bool = False) -> InlineKeyboardMarkup:
 
 
 def payment_methods_kb(product_type: str, plan_key: str, back_cb: str) -> InlineKeyboardMarkup:
-    """Сетка криптовалют + Crypto Bot + Stars. Формат cb: pay:crypto:{type}:{plan}:{cur}:{net}"""
+    """Сетка криптовалют + Stars. Формат cb: pay:crypto:{type}:{plan}:{cur}:{net}"""
     rows: list[list[InlineKeyboardButton]] = []
     for i in range(0, len(CRYPTO_OPTIONS), 2):
         row = [
@@ -79,10 +79,6 @@ def payment_methods_kb(product_type: str, plan_key: str, back_cb: str) -> Inline
             for label, cur, net in CRYPTO_OPTIONS[i:i + 2]
         ]
         rows.append(row)
-    rows.append([InlineKeyboardButton(
-        text="🤖 Crypto Bot",
-        callback_data=f"pay:cryptopay:{product_type}:{plan_key}",
-    )])
     rows.append([InlineKeyboardButton(
         text="Telegram Stars ⭐️",
         callback_data=f"pay:stars:{product_type}:{plan_key}",

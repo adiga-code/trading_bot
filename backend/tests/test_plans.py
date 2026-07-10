@@ -8,7 +8,7 @@ def test_resolve_vip():
 
 
 def test_resolve_pocket():
-    assert resolve_plan("pocket", "0") == ("PocketOption $65→$87", 65.0)
+    assert resolve_plan("pocket", "0") == ("PocketOption 65$→87$", 65.0)
     assert resolve_plan("pocket", "2")[1] == 230.0
     assert resolve_plan("pocket", "99") is None
     assert resolve_plan("pocket", "abc") is None

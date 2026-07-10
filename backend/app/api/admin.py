@@ -74,6 +74,42 @@ async def users(
     return {"items": [_user_out(u) for u in items]}
 
 
+@router.get("/users/{user_id}")
+async def user_detail(user_id: int, session: AsyncSession = Depends(db_session)):
+    """Карточка пользователя: профиль + подписка + последние покупки."""
+    user = await repo.get_user(session, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    sub = await repo.latest_subscription(session, user_id)
+    plan = VIP_PLANS.get(sub.plan_key) if sub else None
+    subscription = None
+    if sub:
+        subscription = {
+            "plan_key": sub.plan_key,
+            "plan_name": plan.name if plan else sub.plan_key,
+            "status": sub.status,
+            "started_at": sub.started_at.isoformat(),
+            "expires_at": sub.expires_at.isoformat() if sub.expires_at else None,
+        }
+
+    purchases = await repo.user_purchases(session, user_id)
+    return {
+        **_user_out(user),
+        "subscription": subscription,
+        "purchases": [
+            {
+                "id": p.id,
+                "product_type": p.product_type,
+                "plan_name": p.plan_name,
+                "amount_usd": p.amount_usd,
+                "created_at": p.created_at.isoformat(),
+            }
+            for p in purchases
+        ],
+    }
+
+
 @router.get("/purchases")
 async def purchases(limit: int = 100, offset: int = 0, session: AsyncSession = Depends(db_session)):
     rows = await repo.list_purchases(session, limit=min(limit, 200), offset=offset)

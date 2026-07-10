@@ -24,11 +24,6 @@ class PayRequest(BaseModel):
     net: str = "TRX-TRC20"
 
 
-class CryptoPayRequest(BaseModel):
-    type: str
-    plan: str
-
-
 class StarsRequest(BaseModel):
     type: str
     plan: str
@@ -61,29 +56,6 @@ async def create_pay(
         "payer_currency": invoice.payer_currency,
         "uuid": invoice.external_id,
         "expires_at": invoice.expires_at,
-    }
-
-
-@router.post("/cryptopay")
-async def create_cryptopay(
-    body: CryptoPayRequest,
-    user: WebAppUser = Depends(current_user),
-    session: AsyncSession = Depends(db_session),
-):
-    await repo.upsert_user(session, user.id, user.username, user.first_name, user.last_name)
-    try:
-        payment, invoice = await payment_service.create_cryptopay_invoice(
-            session,
-            user_id=user.id,
-            product_type=body.type,
-            plan_key=body.plan,
-        )
-    except GatewayError as exc:
-        raise HTTPException(status_code=400, detail=str(exc))
-
-    return {
-        "invoice_id": invoice.external_id,
-        "bot_invoice_url": invoice.pay_url,
     }
 
 

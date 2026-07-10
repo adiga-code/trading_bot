@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from functools import lru_cache
 
-from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -13,22 +12,12 @@ class Settings(BaseSettings):
     # Telegram
     bot_token: str = ""
     admin_ids: list[int] = []
-    vip_channel_id: int | None = None  # id канала (-100...), куда бот выдаёт доступ
     mini_app_url: str = ""
-
-    @field_validator('vip_channel_id', mode='before')
-    @classmethod
-    def parse_vip_channel_id(cls, v):
-        if v == '' or v is None:
-            return None
-        return int(v) if isinstance(v, str) else v
 
     # Платёжные шлюзы
     gate2328_api_key: str = ""
     gate2328_project_id: str = ""
     gate2328_base_url: str = "https://api.2328.io/api/v1"
-    cryptopay_token: str = ""
-    cryptopay_base_url: str = "https://pay.crypt.bot/api"
     payment_callback_url: str = ""
 
     # Инфраструктура
