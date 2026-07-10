@@ -81,7 +81,7 @@ class SubscriptionStatus:
 
 
 class Subscription(Base):
-    """VIP-подписка: срок хранится в БД, доступ в канал выдаёт/забирает админ вручную."""
+    """VIP-подписка: автовыдача инвайта после оплаты и автокик по истечении."""
 
     __tablename__ = "subscriptions"
 

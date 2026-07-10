@@ -67,7 +67,7 @@ export function Users({ config }: { config: AppConfig | null }) {
     try {
       await api.post(`/api/admin/users/${selected.id}/vip`, { plan_key: planKey })
       hapticNotify('success')
-      toast('VIP выдан — не забудь добавить в канал')
+      toast('VIP выдан, инвайт отправлен')
       setSelected(null)
       load(search)
     } catch (e) {
@@ -201,7 +201,7 @@ export function Users({ config }: { config: AppConfig | null }) {
                 onClick={revokeVip}
                 className="mt-2 w-full rounded-el border border-down/40 bg-down/10 py-2 text-[12.5px] font-semibold text-down"
               >
-                🚫 Снять VIP (из канала убери вручную)
+                🚫 Снять VIP и убрать из канала
               </button>
             )}
 

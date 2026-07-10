@@ -164,7 +164,7 @@ async def vip_grant(query: CallbackQuery, session) -> None:
     until = f"до {sub.expires_at:%d.%m.%Y}" if sub.expires_at else "навсегда"
     await query.message.edit_text(
         f"✅ VIP выдан пользователю <code>{uid}</code> ({until}).\n"
-        f"Не забудь добавить его в VIP-канал вручную.",
+        f"Инвайт в канал отправлен автоматически.",
         reply_markup=keyboards.back_button("adm:panel"),
         parse_mode="HTML",
     )

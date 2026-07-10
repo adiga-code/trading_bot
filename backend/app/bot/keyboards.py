@@ -127,3 +127,14 @@ def admin_notify_actions(uid: int) -> InlineKeyboardMarkup:
         InlineKeyboardButton(text="👤 Пользователь", callback_data=f"adm:info:{uid}"),
         InlineKeyboardButton(text="✉️ Написать", callback_data=f"adm:reply:{uid}"),
     ]])
+
+
+def admin_pocket_notify_actions(uid: int) -> InlineKeyboardMarkup:
+    """Кнопки под уведомлением о купленном PocketOption: выдача в один тап."""
+    return InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="📦 Выдать аккаунт", callback_data=f"adm:pocket:{uid}")],
+        [
+            InlineKeyboardButton(text="👤 Пользователь", callback_data=f"adm:info:{uid}"),
+            InlineKeyboardButton(text="✉️ Написать", callback_data=f"adm:reply:{uid}"),
+        ],
+    ])

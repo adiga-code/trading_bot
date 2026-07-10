@@ -1,4 +1,4 @@
-"""Сквозные сценарии: подтверждение оплаты, фиксация подписки и её истечение."""
+"""Сквозные сценарии: подтверждение оплаты, автовыдача и истечение подписки."""
 from datetime import timedelta
 
 import pytest
@@ -9,11 +9,20 @@ from app.services.fulfillment import confirm_payment
 from app.services.subscriptions import grant_vip, revoke_vip
 
 
+@pytest.fixture
+def vip_channel(monkeypatch):
+    from app.config import get_settings
+    monkeypatch.setenv("VIP_CHANNEL_ID", "-1001234567890")
+    get_settings.cache_clear()
+    yield
+    get_settings.cache_clear()
+
+
 async def _make_user(db, uid=100):
     return await repo.upsert_user(db, uid, "buyer", "Buy", "Er")
 
 
-async def test_confirm_vip_payment_grants_subscription(db, fake_bot):
+async def test_confirm_vip_payment_grants_subscription(db, fake_bot, vip_channel):
     user = await _make_user(db)
     payment = await repo.create_payment(
         db, user_id=user.id, gateway="gate2328", external_id="uuid-1",
@@ -26,13 +35,12 @@ async def test_confirm_vip_payment_grants_subscription(db, fake_bot):
     sub = await repo.active_subscription(db, user.id)
     assert sub is not None and sub.status == SubscriptionStatus.ACTIVE
     assert sub.expires_at is not None
+    assert sub.invite_link == "https://t.me/+test_invite"
     assert (await repo.get_user(db, user.id)).is_vip
-    # бот НЕ трогает канал — доступ выдаёт админ вручную
-    assert fake_bot.invites == []
-    # пользователь получил подтверждение, админ (id=1) — карточку покупателя
-    assert any(chat == user.id and "VIP доступ активирован" in text for chat, text in fake_bot.messages)
+    # пользователь получил одноразовый инвайт, админ (id=1) — карточку покупателя
+    assert any(chat == user.id and "t.me/+test_invite" in text for chat, text in fake_bot.messages)
     admin_msgs = [text for chat, text in fake_bot.messages if chat == 1]
-    assert admin_msgs and "выдай доступ" in admin_msgs[0].lower()
+    assert admin_msgs and "автоматически" in admin_msgs[0]
     assert any("@buyer" in t and "45$" in t for t in admin_msgs)
 
 
@@ -74,17 +82,17 @@ async def test_extension_adds_to_existing_subscription(db, fake_bot):
     assert sub2.expires_at > first_expiry + timedelta(days=85)
 
 
-async def test_revoke_marks_expired_without_touching_channel(db, fake_bot):
+async def test_revoke_kicks_and_marks_expired(db, fake_bot, vip_channel):
     user = await _make_user(db)
     sub = await grant_vip(fake_bot, db, user.id, "1month")
     await revoke_vip(fake_bot, db, sub)
 
     assert sub.status == SubscriptionStatus.EXPIRED
     assert not (await repo.get_user(db, user.id)).is_vip
-    assert fake_bot.banned == [] and fake_bot.unbanned == []
+    assert fake_bot.banned == [user.id] and fake_bot.unbanned == [user.id]
 
 
-async def test_scheduler_tick_expires_overdue(db, fake_bot, monkeypatch):
+async def test_scheduler_tick_expires_overdue(db, fake_bot, vip_channel, monkeypatch):
     from app.services import subscriptions as subs_module
 
     user = await _make_user(db)
@@ -100,5 +108,5 @@ async def test_scheduler_tick_expires_overdue(db, fake_bot, monkeypatch):
     async with get_sessionmaker()() as check:
         assert (await repo.active_subscription(check, user.id)) is None
         assert not (await repo.get_user(check, user.id)).is_vip
-    # админ уведомлён об истечении
-    assert any(chat == 1 and "истекла" in text for chat, text in fake_bot.messages)
+    # просроченный автоматически кикнут из канала
+    assert user.id in fake_bot.banned

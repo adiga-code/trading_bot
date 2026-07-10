@@ -57,7 +57,7 @@ async def confirm_payment(bot: Bot, session, payment: Payment) -> None:
         await subscriptions.grant_vip(bot, session, payment.user_id, payment.plan_key)
         await notify_admins(
             bot,
-            "✅ <b>Куплена VIP-подписка — выдай доступ в канал</b>\n\n"
+            "✅ <b>Куплена VIP-подписка — доступ выдан автоматически</b>\n\n"
             + _buyer_card(payment, user),
             reply_markup=keyboards.admin_notify_actions(payment.user_id),
         )
@@ -83,8 +83,8 @@ async def confirm_payment(bot: Bot, session, payment: Payment) -> None:
             pass
         await notify_admins(
             bot,
-            "🏦 <b>Оплачен заказ PocketOption — нужна выдача</b>\n\n"
+            "🏦 <b>Куплен аккаунт PocketOption — нужна выдача</b>\n\n"
             + _buyer_card(payment, user)
-            + "\n\n➡️ Выдай аккаунт через админку или /admin в боте.",
-            reply_markup=keyboards.admin_notify_actions(payment.user_id),
+            + "\n\n➡️ Нажми «Выдать аккаунт» и впиши данные для входа — бот отправит их покупателю.",
+            reply_markup=keyboards.admin_pocket_notify_actions(payment.user_id),
         )

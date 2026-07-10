@@ -1,8 +1,8 @@
-"""Учёт VIP-подписок.
+"""Автовыдача VIP-доступа.
 
-После оплаты подписка фиксируется в БД, пользователь получает подтверждение,
-а доступ в VIP-канал выдаёт админ вручную. Фоновый цикл раз в час уведомляет
-админов о подписках, которые скоро закончатся или уже истекли.
+После оплаты: создаём/продлеваем подписку, генерируем одноразовую invite-ссылку
+в VIP-канал и отправляем её пользователю. Фоновый цикл раз в час напоминает о
+скором окончании и удаляет из канала тех, у кого подписка истекла.
 """
 from __future__ import annotations
 
@@ -30,7 +30,8 @@ async def notify_admins(bot: Bot, text: str, reply_markup=None) -> None:
 
 
 async def grant_vip(bot: Bot, session, user_id: int, plan_key: str) -> Subscription:
-    """Выдать/продлить VIP: подписка в БД + is_vip=True. Доступ в канал выдаёт админ."""
+    """Выдать/продлить VIP: подписка в БД + одноразовый инвайт в канал + is_vip=True."""
+    settings = get_settings()
     plan = VIP_PLANS.get(plan_key)
     months = plan.months if plan else None
 
@@ -51,6 +52,19 @@ async def grant_vip(bot: Bot, session, user_id: int, plan_key: str) -> Subscript
         sub = Subscription(user_id=user_id, plan_key=plan_key, expires_at=expires_at)
         session.add(sub)
 
+    invite_link = None
+    if settings.vip_channel_id:
+        try:
+            invite = await bot.create_chat_invite_link(
+                chat_id=settings.vip_channel_id,
+                member_limit=1,
+                name=f"vip {user_id}",
+            )
+            invite_link = invite.invite_link
+            sub.invite_link = invite_link
+        except Exception as exc:
+            logger.error("create_chat_invite_link for %s: %s", user_id, exc)
+
     await repo.set_vip(session, user_id, True)
     await session.commit()
 
@@ -59,10 +73,11 @@ async def grant_vip(bot: Bot, session, user_id: int, plan_key: str) -> Subscript
         until = f"до <b>{expires_at:%d.%m.%Y}</b>"
     else:
         until = "<b>навсегда</b>"
-    text = (
-        f"🎉 <b>Ваш VIP доступ активирован</b> 💎\n\nПодписка действует {until}.\n\n"
-        "Администратор пришлёт ссылку на VIP-канал в ближайшее время."
-    )
+    text = f"🎉 <b>Ваш VIP доступ активирован</b> 💎\n\nПодписка действует {until}."
+    if invite_link:
+        text += f"\n\n👉 Ссылка для входа в VIP-канал (одноразовая):\n{invite_link}"
+    else:
+        text += "\n\nАдминистратор пришлёт данные доступа в ближайшее время."
     try:
         await bot.send_message(user_id, text, parse_mode="HTML")
     except Exception as exc:
@@ -72,8 +87,17 @@ async def grant_vip(bot: Bot, session, user_id: int, plan_key: str) -> Subscript
 
 
 async def revoke_vip(bot: Bot, session, sub: Subscription, *, notify: bool = True) -> None:
-    """Пометить подписку истёкшей (из канала пользователя убирает админ вручную)."""
+    """Пометить подписку истёкшей и убрать пользователя из VIP-канала."""
+    settings = get_settings()
     await repo.expire_subscription(session, sub)
+
+    if settings.vip_channel_id:
+        try:
+            # ban+unban = кик без перманентного бана: сможет вернуться по новой ссылке
+            await bot.ban_chat_member(settings.vip_channel_id, sub.user_id)
+            await bot.unban_chat_member(settings.vip_channel_id, sub.user_id)
+        except Exception as exc:
+            logger.warning("kick %s from vip channel: %s", sub.user_id, exc)
 
     if notify:
         try:
@@ -87,13 +111,6 @@ async def revoke_vip(bot: Bot, session, sub: Subscription, *, notify: bool = Tru
             pass
 
 
-def _who(user, user_id: int) -> str:
-    if user:
-        uname = f" (@{user.username})" if user.username else ""
-        return f"{user.display_name}{uname}"
-    return f"ID:{user_id}"
-
-
 async def _tick(bot: Bot) -> None:
     settings = get_settings()
     remind_delta = timedelta(days=settings.subscription_remind_before_days)
@@ -103,29 +120,22 @@ async def _tick(bot: Bot) -> None:
         for sub in await repo.active_subscriptions(session):
             if sub.expires_at is None:
                 continue
-            user = await repo.get_user(session, sub.user_id)
-            who = _who(user, sub.user_id)
             if sub.expires_at <= now:
                 logger.info("subscription %s of user %s expired", sub.id, sub.user_id)
                 await revoke_vip(bot, session, sub)
-                await notify_admins(
-                    bot,
-                    f"⏰ <b>VIP-подписка истекла</b>\n\n"
-                    f"👤 {who}\n🆔 <code>{sub.user_id}</code>\n"
-                    f"📦 Тариф: {sub.plan_key}\n\n"
-                    f"➡️ Убери пользователя из VIP-канала вручную.",
-                )
             elif not sub.reminder_sent and sub.expires_at - now <= remind_delta:
                 sub.reminder_sent = True
                 await session.commit()
-                days_left = max(1, (sub.expires_at - now).days)
-                await notify_admins(
-                    bot,
-                    f"⏳ <b>VIP-подписка скоро закончится</b>\n\n"
-                    f"👤 {who}\n🆔 <code>{sub.user_id}</code>\n"
-                    f"📦 Тариф: {sub.plan_key}\n"
-                    f"📅 Осталось: <b>{days_left} дн.</b> (до {sub.expires_at:%d.%m.%Y})",
-                )
+                try:
+                    days_left = max(1, (sub.expires_at - now).days)
+                    await bot.send_message(
+                        sub.user_id,
+                        f"⏳ Ваша VIP-подписка закончится через <b>{days_left} дн.</b>\n\n"
+                        "Продлите заранее, чтобы не потерять доступ к сигналам.",
+                        parse_mode="HTML",
+                    )
+                except Exception:
+                    pass
 
 
 async def scheduler_loop(bot: Bot) -> None:
