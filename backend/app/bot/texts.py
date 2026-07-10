@@ -29,7 +29,7 @@ def pocket_text() -> str:
     ]
     for t in POCKET_TIERS:
         bonus = round((t.balance_usd / t.pay_usd - 1) * 100)
-        lines.append(f"• платите <b>{t.pay_usd:.0f}$</b> → баланс <b>{t.balance_usd:.0f}$</b> (+{bonus}%)")
+        lines.append(f"• платите <b>{t.pay_usd:.0f}$</b> получаете <b>{t.balance_usd:.0f}$</b> (+{bonus}%)")
     lines.append("\nАккаунт выдаётся после подтверждения оплаты.")
     return "\n".join(lines)
 
