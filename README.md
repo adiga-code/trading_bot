@@ -110,6 +110,25 @@ cp .env.example .env   # заполнить
 docker compose up --build
 ```
 
+## Деплой на своём VPS со своим доменом
+
+В `docker-compose.yml` уже настроен reverse-proxy (`nginx-proxy` + `acme-companion`),
+который сам получает и продлевает SSL-сертификат Let's Encrypt — руками certbot
+дёргать не нужно.
+
+1. Убедись, что A-запись домена уже указывает на IP этого сервера (проверить:
+   `dig +short твой-домен`) и что на сервере открыты порты **80** и **443**
+   (`ufw allow 80,443/tcp` или в настройках облака/firewall)
+2. `cp .env.example .env`, заполни как обычно, плюс:
+   - `DOMAIN=твой-домен` (без `https://`)
+   - `LETSENCRYPT_EMAIL=твой@email` (для уведомлений об истечении сертификата)
+   - `MINI_APP_URL=https://твой-домен`
+3. `docker compose up -d --build`
+4. Подожди ~30–60 секунд, пока `acme-companion` выпустит сертификат — прогресс
+   видно в `docker compose logs -f acme-companion`
+5. Открой `https://твой-домен/api/health` — должен ответить 200
+6. В @BotFather: Bot Settings → Menu Button → укажи тот же `https://твой-домен`
+
 ## Деплой на Railway
 
 1. Подключи репозиторий — Railway соберёт по `Dockerfile` (см. `railway.json`)
