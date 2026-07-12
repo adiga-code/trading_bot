@@ -54,7 +54,7 @@ export function TabBar({ tab, onChange, isAdmin }: { tab: Tab; onChange: (t: Tab
   const tabs = isAdmin ? [...TABS, ADMIN_TAB] : TABS
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 border-t border-stroke bg-bg/80 backdrop-blur-lg"
+      className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.07] bg-[rgba(15,18,26,0.86)] shadow-[0_-12px_30px_rgba(0,0,0,0.35)] backdrop-blur-[18px]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="mx-auto flex max-w-md">
@@ -71,7 +71,7 @@ export function TabBar({ tab, onChange, isAdmin }: { tab: Tab; onChange: (t: Tab
                 active ? 'text-gold' : 'text-t3'
               }`}
             >
-              <span className={`absolute top-0 h-0.5 w-8 rounded-full transition-opacity ${active ? 'bg-gold opacity-100' : 'opacity-0'}`} />
+              <span className={`absolute left-[20%] right-[20%] top-0 h-0.5 rounded-full transition-opacity ${active ? 'bg-gold opacity-100' : 'opacity-0'}`} />
               <span className="h-5 w-5">{t.icon}</span>
               {t.label}
             </button>

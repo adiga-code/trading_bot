@@ -112,7 +112,7 @@ export function PaymentSheet({
     <>
       <div className="fixed inset-0 z-40 bg-black/60" onClick={onClose} />
       <div
-        className="sheet-in fixed bottom-0 left-0 right-0 z-50 mx-auto max-w-md rounded-t-3xl border-t border-stroke bg-card"
+        className="sheet-in fixed bottom-0 left-0 right-0 z-50 mx-auto max-w-md rounded-t-[20px] border-t border-white/[0.08] bg-sheet"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}
       >
         <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-t3/40" />
@@ -128,7 +128,7 @@ export function PaymentSheet({
                   haptic('light')
                   setStep('crypto')
                 }}
-                className="mt-4 flex w-full items-center gap-3 rounded-card border border-stroke bg-card2 p-3.5 text-left active:scale-[0.99]"
+                className="mt-4 flex w-full items-center gap-3 rounded-card bg-card2 p-3.5 text-left active:scale-[0.99]"
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-el bg-gold/15 text-lg">₿</span>
                 <span className="flex-1">
@@ -139,7 +139,7 @@ export function PaymentSheet({
               </button>
               <button
                 onClick={payStars}
-                className="mt-2.5 flex w-full items-center gap-3 rounded-card border border-stroke bg-card2 p-3.5 text-left active:scale-[0.99]"
+                className="mt-2.5 flex w-full items-center gap-3 rounded-card bg-card2 p-3.5 text-left active:scale-[0.99]"
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-el bg-gold/15 text-lg">⭐</span>
                 <span className="flex-1">
@@ -159,7 +159,7 @@ export function PaymentSheet({
                   <button
                     key={`${opt.cur}-${opt.net}`}
                     onClick={() => payCrypto(opt)}
-                    className="rounded-el border border-stroke bg-card2 px-3 py-2.5 text-left text-[13px] font-medium active:scale-[0.98]"
+                    className="rounded-el bg-card2 px-3 py-2.5 text-left text-[13px] font-medium active:scale-[0.98]"
                   >
                     {opt.label}
                     <span className="block text-[10.5px] font-normal text-t3">{opt.net}</span>
@@ -185,7 +185,7 @@ export function PaymentSheet({
                 <span className="text-lg">✓</span>
                 <span className="font-display text-[16px] font-bold text-t1">Счёт создан</span>
               </div>
-              <div className="mt-3 rounded-card border border-stroke bg-card2 p-4">
+              <div className="mt-3 rounded-card bg-card2 p-4">
                 <div className="text-[11px] uppercase tracking-wide text-t3">К оплате</div>
                 <div className="tnum mt-1 font-display text-[22px] font-bold text-gold">
                   {fmtCrypto(details.payer_amount)} {details.payer_currency}
@@ -207,7 +207,7 @@ export function PaymentSheet({
               {details.url && (
                 <button
                   onClick={() => openExternal(details.url)}
-                  className="mt-3 w-full rounded-card bg-gold py-3 text-[14px] font-bold text-bg active:scale-[0.99]"
+                  className="mt-3 w-full rounded-pill bg-gold-cta py-[15px] text-[14px] font-extrabold text-bg shadow-[0_10px_26px_rgba(232,180,76,0.35)] active:scale-[0.99]"
                 >
                   💳 Оплатить онлайн
                 </button>
@@ -215,7 +215,7 @@ export function PaymentSheet({
               {details.tg_link && details.tg_link !== details.url && (
                 <button
                   onClick={() => openExternal(details.tg_link)}
-                  className="mt-2 w-full rounded-card border border-stroke bg-card2 py-3 text-[14px] font-semibold active:scale-[0.99]"
+                  className="mt-2 w-full rounded-pill border border-white/[0.12] bg-transparent py-3 text-[14px] font-semibold text-t2 active:scale-[0.99]"
                 >
                   ⚡ Оплатить в Telegram
                 </button>
@@ -232,7 +232,7 @@ export function PaymentSheet({
               <div className="mt-2 text-center text-[13.5px] text-t2">{error}</div>
               <button
                 onClick={() => setStep('method')}
-                className="mt-4 rounded-card border border-stroke bg-card2 px-6 py-2.5 text-[13px] font-semibold"
+                className="mt-4 rounded-pill bg-gold-cta px-6 py-2.5 text-[13px] font-bold text-bg"
               >
                 Попробовать другой способ
               </button>

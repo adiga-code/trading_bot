@@ -7,8 +7,10 @@ export default {
     extend: {
       colors: {
         bg: '#0B0E14',
-        card: '#12161F',
-        card2: '#1A2029',
+        card: '#15171C',
+        // sheet keeps the previous card color, dedicated to bottom sheets/modals
+        sheet: '#12161F',
+        card2: '#1C1E24',
         stroke: 'rgba(255,255,255,0.06)',
         gold: { DEFAULT: '#E8B44C', dim: '#B98E3A' },
         up: '#34D399',
@@ -22,8 +24,16 @@ export default {
         body: ['Inter', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
-        card: '16px',
+        card: '18px',
+        row: '16px',
+        hero: '22px',
+        pill: '999px',
+        stat: '14px',
         el: '12px',
+      },
+      backgroundImage: {
+        'gold-cta': 'linear-gradient(180deg,#F3C868 0%,#E8B44C 55%,#D8A23A 100%)',
+        'gold-hero': 'linear-gradient(180deg,#FFD76B 0%,#F2B742 100%)',
       },
     },
   },

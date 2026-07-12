@@ -20,7 +20,7 @@ export function Ticker({ markets }: { markets: Market[] }) {
     </>
   )
   return (
-    <div className="overflow-hidden border-y border-stroke bg-card/50 py-1.5">
+    <div className="mx-4 mt-1 overflow-hidden rounded-row bg-[rgba(21,23,28,0.55)] py-3 backdrop-blur-sm">
       <div className="animate-marquee whitespace-nowrap" style={{ width: 'max-content' }}>
         {row}
         {row}
