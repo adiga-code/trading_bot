@@ -8,7 +8,7 @@ export function Pocket({ config, onBuy }: { config: AppConfig | null; onBuy: (p:
 
   return (
     <div className="fade-up px-4 pb-6 pt-4">
-      <h2 className="font-display text-[19px] font-extrabold">🏦 PocketOption</h2>
+      <h2 className="font-display text-[20px] font-extrabold">PocketOption Аккаунты</h2>
       <p className="mt-2 rounded-card bg-card p-3.5 text-[12.5px] leading-relaxed text-t2 shadow-[0_6px_16px_rgba(0,0,0,0.35)]">
         Готовый аккаунт PocketOption с балансом <strong className="text-t1">выше суммы оплаты</strong> — выдаётся
         после подтверждения платежа.

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { ChartModal } from './components/ChartModal'
 import { PaymentSheet } from './components/PaymentSheet'
+import { Splash } from './components/Splash'
 import { TabBar } from './components/TabBar'
 import { ToastProvider } from './components/Toast'
 import { api } from './lib/api'
@@ -34,6 +35,7 @@ export default function App() {
 
   return (
     <ToastProvider>
+      <Splash />
       <div className="mx-auto min-h-screen max-w-md pb-20" style={{ paddingTop: 'env(safe-area-inset-top)' }}>
         {tab === 'home' && <Home markets={markets} config={config} onTab={setTab} onOpenChart={setChartMarket} />}
         {tab === 'vip' && <Vip config={config} onBuy={setPayProduct} />}
