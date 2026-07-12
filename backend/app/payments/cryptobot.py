@@ -10,7 +10,7 @@ import logging
 import aiohttp
 
 from app.config import get_settings
-from app.payments.base import GatewayError, Invoice
+from app.payments.base import GatewayError, Invoice, PENDING_TTL_SECONDS
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +44,10 @@ class CryptoBot:
             "payload": order_id,
             "allow_comments": False,
             "allow_anonymous": False,
+            # Инвойс должен истечь не позже, чем watcher перестанет опрашивать
+            # его локальный статус (см. PENDING_TTL_SECONDS) — иначе покупатель
+            # может оплатить уже после того, как платёж помечен истёкшим у нас.
+            "expires_in": PENDING_TTL_SECONDS,
         }
         try:
             data = await self._post("createInvoice", body)
@@ -56,9 +60,13 @@ class CryptoBot:
             raise GatewayError(str(err))
 
         res = data.get("result", {})
+        invoice_id = res.get("invoice_id")
+        if invoice_id is None:
+            raise GatewayError("Шлюз не вернул ID счёта")
+
         pay_url = res.get("mini_app_invoice_url") or res.get("bot_invoice_url") or res.get("pay_url", "")
         return Invoice(
-            external_id=str(res.get("invoice_id") or order_id),
+            external_id=str(invoice_id),
             pay_url=pay_url,
             tg_link=res.get("bot_invoice_url", ""),
             payer_amount=str(res.get("amount", f"{amount_usd:.2f}")),

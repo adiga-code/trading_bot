@@ -15,7 +15,7 @@ from app.db import repo
 from app.db.models import PaymentStatus, utcnow
 from app.db.session import get_sessionmaker
 from app.payments import cryptobot as cryptobot_module
-from app.payments.base import FINAL_STATUSES, PAID_STATUSES
+from app.payments.base import FINAL_STATUSES, PAID_STATUSES, PENDING_TTL_SECONDS
 from app.payments.cryptobot import CryptoBot
 from app.payments.gate2328 import Gate2328
 from app.services.fulfillment import confirm_payment
@@ -24,7 +24,7 @@ from app.services.http import get_http_session
 logger = logging.getLogger(__name__)
 
 CHECK_INTERVAL = 30           # сек между проверками
-PAYMENT_TTL = timedelta(hours=2)  # pending старше — помечаем истёкшим
+PAYMENT_TTL = timedelta(seconds=PENDING_TTL_SECONDS)  # pending старше — помечаем истёкшим
 
 
 async def _check_once(bot: Bot) -> None:
