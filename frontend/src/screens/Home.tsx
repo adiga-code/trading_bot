@@ -112,8 +112,8 @@ export function Home({
             </span>
             <Arrow />
           </div>
-          <div className="mt-2 font-display text-[17px] font-bold">💎 VIP Канал</div>
-          <div className="mt-0.5 text-[12.5px] text-t2">Сигналы с Win Rate 68.9% · от 45$/мес</div>
+          <div className="mt-2 font-display text-[15px] font-bold">Приватные сигналы 24/7</div>
+          <div className="mt-0.5 text-[12px] text-t2">Вход, тейк-профит, стоп-лосс</div>
         </button>
 
         <button
@@ -129,8 +129,8 @@ export function Home({
             </span>
             <Arrow />
           </div>
-          <div className="mt-2 font-display text-[17px] font-bold">🏦 Pocket Option</div>
-          <div className="mt-0.5 text-[12.5px] text-t2">Платишь 65$ → получаешь 87$ на счёте</div>
+          <div className="mt-2 font-display text-[15px] font-bold">Готовые аккаунты с балансом</div>
+          <div className="mt-0.5 text-[12px] text-t2">Выгода до +52%</div>
         </button>
       </div>
 
@@ -138,14 +138,9 @@ export function Home({
       {config && (
         <button
           onClick={() => openExternal(`https://t.me/${config.support_username}`)}
-          className="mx-4 mt-4 flex w-[calc(100%-2rem)] items-center gap-3 rounded-card border border-stroke bg-card p-3.5 text-left active:scale-[0.99]"
+          className="pt-1 text-center text-[12px] text-t3"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-el bg-card2 text-lg">🆘</span>
-          <span className="flex-1">
-            <span className="block text-[14px] font-semibold">Поддержка</span>
-            <span className="block text-[12px] text-t3">@{config.support_username} · 24/7</span>
-          </span>
-          <Arrow />
+          Поддержка · <span className="text-t2">@{config.support_username}</span>
         </button>
       )}
 

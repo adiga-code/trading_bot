@@ -38,7 +38,7 @@ export function Stats({ config }: { config: AppConfig | null }) {
 
   return (
     <div className="fade-up px-4 pb-6 pt-4">
-      <h2 className="font-display text-[19px] font-extrabold">📊 Статистика</h2>
+      <h2 className="font-display text-[20px] font-extrabold">Статистика</h2>
 
       <div className="mt-3 grid grid-cols-4 gap-2">
         <Meta value="1943%" label="Прибыль" cls="text-gold" highlight />

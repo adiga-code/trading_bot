@@ -3,8 +3,19 @@ import { haptic } from '../lib/telegram'
 import type { Market } from '../types'
 import { Sparkline } from './Sparkline'
 
-// детерминированный цвет иконки по символу — чисто визуально, в данные не пишется
-function iconBg(seed: string) {
+const ICON_BG: Record<string, string> = {
+  BTC: 'linear-gradient(145deg,#F7931A,#C9720C)',
+  ETH: 'linear-gradient(145deg,#8E9BC7,#5A6591)',
+  SOL: 'linear-gradient(145deg,#9945FF,#14F195)',
+  TON: 'linear-gradient(145deg,#4CC1E8,#2A82A8)',
+  BNB: 'linear-gradient(145deg,#F3BA2F,#C9930E)',
+  XRP: 'linear-gradient(145deg,#33333A,#0F0F12)',
+  XAU: 'linear-gradient(145deg,#E8C468,#B8912F)',
+  XAG: 'linear-gradient(145deg,#C9CDD3,#8B909A)',
+}
+
+// запасной детерминированный цвет для символов вне ICON_BG — чисто визуально, в данные не пишется
+function fallbackIconBg(seed: string) {
   let hash = 0
   for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
   const hue = hash % 360
@@ -25,6 +36,7 @@ export function MarketList({ markets, onOpen }: { markets: Market[]; onOpen: (m:
     <div className="divide-y divide-white/[0.045] overflow-hidden rounded-card bg-card shadow-[0_6px_16px_rgba(0,0,0,0.35)]">
       {markets.map((m) => {
         const up = (m.pct ?? 0) >= 0
+        const sym = m.kind === 'metal' ? m.symbol : m.symbol.replace('USDT', '')
         return (
           <button
             key={m.symbol}
@@ -36,9 +48,9 @@ export function MarketList({ markets, onOpen }: { markets: Market[]; onOpen: (m:
           >
             <div
               className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full text-[10px] font-extrabold text-bg shadow-[0_2px_8px_rgba(0,0,0,0.4)]"
-              style={{ background: iconBg(m.symbol) }}
+              style={{ background: ICON_BG[sym] ?? fallbackIconBg(sym) }}
             >
-              {m.name.slice(0, 2).toUpperCase()}
+              {sym}
             </div>
             <div className="min-w-0 flex-1">
               <div className="text-[13.5px] font-semibold">{m.name}</div>

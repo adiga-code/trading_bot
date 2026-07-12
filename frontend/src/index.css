@@ -80,6 +80,16 @@ body {
   animation: ftk-float 3.2s ease-in-out infinite;
 }
 
+/* лого на сплэш-экране */
+@keyframes ftk-logofade {
+  0% { opacity: 0; transform: scale(0.97); }
+  15% { opacity: 1; transform: scale(1); }
+  100% { opacity: 1; }
+}
+.ftk-logofade {
+  animation: ftk-logofade 2.6s ease forwards;
+}
+
 /* сетка графика */
 .chart-grid {
   background-image:
