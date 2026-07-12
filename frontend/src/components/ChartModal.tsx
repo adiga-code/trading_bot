@@ -162,7 +162,7 @@ export function ChartModal({ market, onClose }: { market: Market | null; onClose
           </div>
         )}
       </div>
-      <div className="flex gap-1.5 px-4 py-2.5">
+      <div className="flex gap-1.5 px-4 py-3">
         {TIMEFRAMES.map((t) => (
           <button
             key={t}
@@ -170,15 +170,15 @@ export function ChartModal({ market, onClose }: { market: Market | null; onClose
               haptic('light')
               setTf(t)
             }}
-            className={`tnum rounded-el px-3 py-1.5 text-[12px] font-semibold ${
-              tf === t ? 'bg-gold text-bg' : 'border border-stroke bg-card text-t2'
+            className={`tnum flex-1 rounded-pill py-[9px] text-center text-[12px] font-bold ${
+              tf === t ? 'bg-gold text-bg' : 'bg-card2 text-t2'
             }`}
           >
             {t}
           </button>
         ))}
       </div>
-      <div ref={containerRef} className="min-h-0 flex-1" />
+      <div ref={containerRef} className="chart-grid m-4 min-h-0 flex-1 overflow-hidden rounded-[12px]" />
     </div>
   )
 }

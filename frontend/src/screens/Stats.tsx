@@ -41,7 +41,7 @@ export function Stats({ config }: { config: AppConfig | null }) {
       <h2 className="font-display text-[19px] font-extrabold">📊 Статистика</h2>
 
       <div className="mt-3 grid grid-cols-4 gap-2">
-        <Meta value="1943%" label="Прибыль" cls="text-gold" />
+        <Meta value="1943%" label="Прибыль" cls="text-gold" highlight />
         <Meta value="68.9%" label="Win Rate" cls="text-up" />
         <Meta value="45" label="Сигналов" cls="text-t1" />
         <Meta value="62.7%" label="Ср. профит" cls="text-up" />
@@ -55,14 +55,21 @@ export function Stats({ config }: { config: AppConfig | null }) {
         <div className="tnum text-[11px] text-t3">{secAgo != null ? `обновлено ${secAgo} с назад` : ''}</div>
       </div>
 
-      <div className="mt-2 overflow-hidden rounded-card border border-stroke bg-card">
-        {pairs.map((pair, i) => {
+      <div className="mt-2 overflow-hidden rounded-card bg-card shadow-[0_6px_16px_rgba(0,0,0,0.35)]">
+        <div className="flex items-center justify-between border-b border-white/[0.06] px-3.5 py-2.5 text-[10px] uppercase tracking-wide text-t3">
+          <span>Пара</span>
+          <span className="flex items-center gap-3">
+            <span>Цена</span>
+            <span className="w-[64px] text-right">24ч</span>
+          </span>
+        </div>
+        {pairs.map((pair) => {
           const row = rows[pair]
           const up = row ? row.pct >= 0 : true
           return (
             <div
               key={pair}
-              className={`flex items-center justify-between px-3.5 py-2 ${i > 0 ? 'border-t border-stroke' : ''}`}
+              className="flex items-center justify-between border-t border-white/[0.04] px-3.5 py-2 first:border-t-0"
             >
               <span className="tnum text-[12.5px] font-medium text-t2">{pair}</span>
               {loading && !row ? (
@@ -88,7 +95,7 @@ export function Stats({ config }: { config: AppConfig | null }) {
           refresh()
         }}
         disabled={loading}
-        className="mt-3 w-full rounded-card border border-stroke bg-card py-2.5 text-[13px] font-semibold text-t2 active:scale-[0.99] disabled:opacity-60"
+        className="mt-3 w-full rounded-pill bg-card2 py-2.5 text-[13px] font-semibold text-t2 active:scale-[0.99] disabled:opacity-60"
       >
         {loading ? 'Обновляем…' : '🔄 Обновить'}
       </button>
@@ -96,9 +103,15 @@ export function Stats({ config }: { config: AppConfig | null }) {
   )
 }
 
-function Meta({ value, label, cls }: { value: string; label: string; cls: string }) {
+function Meta({ value, label, cls, highlight }: { value: string; label: string; cls: string; highlight?: boolean }) {
   return (
-    <div className="rounded-card border border-stroke bg-card px-1 py-3 text-center">
+    <div
+      className={`rounded-stat px-1 py-3 text-center ${
+        highlight
+          ? 'border border-gold/40 bg-[linear-gradient(180deg,#1D1A12_0%,#10141B_100%)] shadow-[0_0_26px_rgba(232,180,76,0.15),0_10px_24px_rgba(0,0,0,0.28)]'
+          : 'border border-white/[0.07] bg-[linear-gradient(180deg,#161B26_0%,#10141B_100%)] shadow-[0_10px_24px_rgba(0,0,0,0.28)]'
+      }`}
+    >
       <div className={`tnum font-display text-[15px] font-bold ${cls}`}>{value}</div>
       <div className="mt-0.5 text-[10px] text-t3">{label}</div>
     </div>

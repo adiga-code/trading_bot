@@ -3,6 +3,14 @@ import { haptic } from '../lib/telegram'
 import type { Market } from '../types'
 import { Sparkline } from './Sparkline'
 
+// детерминированный цвет иконки по символу — чисто визуально, в данные не пишется
+function iconBg(seed: string) {
+  let hash = 0
+  for (let i = 0; i < seed.length; i++) hash = (hash * 31 + seed.charCodeAt(i)) >>> 0
+  const hue = hash % 360
+  return `linear-gradient(145deg, hsl(${hue},70%,55%), hsl(${hue},70%,35%))`
+}
+
 export function MarketList({ markets, onOpen }: { markets: Market[]; onOpen: (m: Market) => void }) {
   if (!markets.length) {
     return (
@@ -14,8 +22,8 @@ export function MarketList({ markets, onOpen }: { markets: Market[]; onOpen: (m:
     )
   }
   return (
-    <div className="overflow-hidden rounded-card border border-stroke bg-card">
-      {markets.map((m, i) => {
+    <div className="divide-y divide-white/[0.045] overflow-hidden rounded-card bg-card shadow-[0_6px_16px_rgba(0,0,0,0.35)]">
+      {markets.map((m) => {
         const up = (m.pct ?? 0) >= 0
         return (
           <button
@@ -24,10 +32,14 @@ export function MarketList({ markets, onOpen }: { markets: Market[]; onOpen: (m:
               haptic('light')
               onOpen(m)
             }}
-            className={`flex w-full items-center gap-3 px-3.5 py-2.5 text-left active:bg-card2 ${
-              i > 0 ? 'border-t border-stroke' : ''
-            }`}
+            className="flex w-full items-center gap-3 px-3.5 py-2.5 text-left active:bg-card2"
           >
+            <div
+              className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-full text-[10px] font-extrabold text-bg shadow-[0_2px_8px_rgba(0,0,0,0.4)]"
+              style={{ background: iconBg(m.symbol) }}
+            >
+              {m.name.slice(0, 2).toUpperCase()}
+            </div>
             <div className="min-w-0 flex-1">
               <div className="text-[13.5px] font-semibold">{m.name}</div>
               <div className="text-[11px] text-t3">{m.kind === 'metal' ? 'Спот · унция' : m.symbol}</div>
