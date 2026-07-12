@@ -57,8 +57,13 @@ export function Home({
               <span className="live-dot h-1.5 w-1.5 rounded-full bg-up" />
               Premium Crypto Signals · 24/7
             </div>
-            <h1 className="font-display text-[26px] font-extrabold leading-[1.15] tracking-wide text-t1">
-              Точность, за которую платят профессионалы
+            <h1
+              className="font-display font-extrabold leading-[1.15] tracking-wide text-t1"
+              style={{ fontSize: 'clamp(19px, 6.2vw, 26px)' }}
+            >
+              Точность, за которую
+              <br />
+              платят профессионалы
             </h1>
           </div>
           <button
