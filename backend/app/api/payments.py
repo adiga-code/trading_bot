@@ -24,6 +24,11 @@ class PayRequest(BaseModel):
     net: str = "TRX-TRC20"
 
 
+class CryptoBotRequest(BaseModel):
+    type: str            # vip | pocket
+    plan: str
+
+
 class StarsRequest(BaseModel):
     type: str
     plan: str
@@ -44,6 +49,34 @@ async def create_pay(
             plan_key=body.plan,
             currency=body.cur,
             network=body.net,
+        )
+    except GatewayError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+    return {
+        "url": invoice.pay_url,
+        "tg_link": invoice.tg_link,
+        "address": invoice.address,
+        "payer_amount": invoice.payer_amount or "?",
+        "payer_currency": invoice.payer_currency,
+        "uuid": invoice.external_id,
+        "expires_at": invoice.expires_at,
+    }
+
+
+@router.post("/pay/cryptobot")
+async def create_cryptobot_pay(
+    body: CryptoBotRequest,
+    user: WebAppUser = Depends(current_user),
+    session: AsyncSession = Depends(db_session),
+):
+    await repo.upsert_user(session, user.id, user.username, user.first_name, user.last_name)
+    try:
+        payment, invoice = await payment_service.create_cryptobot_invoice(
+            session,
+            user_id=user.id,
+            product_type=body.type,
+            plan_key=body.plan,
         )
     except GatewayError as exc:
         raise HTTPException(status_code=400, detail=str(exc))

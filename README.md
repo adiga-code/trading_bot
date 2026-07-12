@@ -15,8 +15,9 @@
 - 🏦 **PocketOption — готовые аккаунты**: платите 65$ → баланс 87$ (+34%),
   120$ → 175$ (+46%), 230$ → 350$ (+52%)
 - 💳 **Оплата**: криптовалюта через 2328.io (BTC, ETH, USDT в трёх сетях, USDC,
-  SOL, TON, BNB, MATIC, TRX, XMR) или Telegram Stars ⭐️ — бот сам проверяет
-  оплату и уведомляет о результате
+  SOL, TON, BNB, MATIC, TRX, XMR), CryptoBot 💎 (@CryptoBot, монету выбирает
+  сам покупатель) или Telegram Stars ⭐️ — бот сам проверяет оплату и
+  уведомляет о результате
 - 📈 **Mini App**: живые цены Binance + золото/серебро, свечные графики с
   таймфреймами, покупка и оплата в 2 тапа, тот же функционал что и в боте
 - 🆘 **Поддержка**: кнопка ведёт в личку @forextrdk — переписка идёт напрямую,
@@ -76,7 +77,7 @@ backend/
     plans.py         # ЕДИНСТВЕННОЕ место с ценами
     db/              # SQLAlchemy 2.0 async: модели, сессии, запросы
     bot/             # aiogram 3: роутеры, клавиатуры, middleware
-    payments/        # шлюз 2328.io + watcher статусов
+    payments/        # шлюзы 2328.io и CryptoBot + watcher статусов
     api/             # auth (initData), payments, market, admin
     services/        # подписки (автовыдача), fulfillment, рынок
   scripts/migrate_old_db.py  # перенос данных из старой bot_database.db

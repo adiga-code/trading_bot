@@ -14,7 +14,11 @@ from app.services.subscriptions import notify_admins
 
 logger = logging.getLogger(__name__)
 
-GATEWAY_LABELS = {"gate2328": "криптовалюта (2328.io)", "stars": "Telegram Stars ⭐️"}
+GATEWAY_LABELS = {
+    "gate2328": "криптовалюта (2328.io)",
+    "cryptobot": "CryptoBot 💎",
+    "stars": "Telegram Stars ⭐️",
+}
 
 
 def _buyer_card(payment: Payment, user) -> str:
