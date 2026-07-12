@@ -81,6 +81,19 @@ async def count_vip_users(session: AsyncSession) -> int:
     return (await session.execute(q)).scalar_one()
 
 
+async def list_vip_users(session: AsyncSession, limit: int = 200, offset: int = 0) -> list[tuple[User, Subscription]]:
+    """Юзеры с активной подпиской, отсортированы по дате окончания (сначала у кого раньше кончается, lifetime — в конец)."""
+    res = await session.execute(
+        select(User, Subscription)
+        .join(Subscription, Subscription.user_id == User.id)
+        .where(Subscription.status == SubscriptionStatus.ACTIVE)
+        .order_by(Subscription.expires_at.is_(None), Subscription.expires_at.asc())
+        .limit(limit)
+        .offset(offset)
+    )
+    return [(u, s) for u, s in res.all()]
+
+
 # ── Платежи ───────────────────────────────────────────────────────────────────
 
 async def create_payment(

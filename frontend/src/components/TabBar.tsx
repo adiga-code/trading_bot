@@ -55,7 +55,7 @@ export function TabBar({ tab, onChange, isAdmin }: { tab: Tab; onChange: (t: Tab
   const tabs = isAdmin ? [...TABS, ADMIN_TAB] : TABS
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.07] bg-[rgba(15,18,26,0.86)] shadow-[0_-12px_30px_rgba(0,0,0,0.35)] backdrop-blur-[18px]"
+      className="fixed bottom-0 left-0 right-0 z-40 border-t border-white/[0.07] bg-black/[0.86] shadow-[0_-12px_30px_rgba(0,0,0,0.35)] backdrop-blur-[18px]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
     >
       <div className="mx-auto flex max-w-md">

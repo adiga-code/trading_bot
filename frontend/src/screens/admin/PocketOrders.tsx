@@ -80,7 +80,7 @@ export function PocketOrders() {
         <>
           <div className="fixed inset-0 z-40 bg-black/60" onClick={() => setSelected(null)} />
           <div
-            className="sheet-in fixed bottom-0 left-0 right-0 z-50 mx-auto max-w-md rounded-t-3xl border-t border-stroke bg-card px-5 pt-4"
+            className="sheet-in fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[85vh] max-w-md overflow-y-auto rounded-t-3xl border-t border-stroke bg-card px-5 pt-4"
             style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 20px)' }}
           >
             <div className="font-display text-[16px] font-bold">📦 Выдача PocketOption</div>
