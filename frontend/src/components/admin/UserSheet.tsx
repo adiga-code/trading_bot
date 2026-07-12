@@ -51,6 +51,11 @@ export function UserSheet({
       .catch(() => setDetail(null))
   }, [userId])
 
+  useEffect(() => {
+    document.body.classList.add('admin-sheet-open')
+    return () => document.body.classList.remove('admin-sheet-open')
+  }, [])
+
   const grantVip = async (planKey: string) => {
     try {
       await api.post(`/api/admin/users/${userId}/vip`, { plan_key: planKey })
@@ -158,6 +163,10 @@ export function UserSheet({
         <textarea
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
+          onFocus={(e) => {
+            const el = e.currentTarget
+            setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)
+          }}
           rows={2}
           placeholder="Текст сообщения…"
           className="mt-2 w-full rounded-el border border-stroke bg-card2 px-3 py-2 text-[13px] placeholder:text-t3 focus:border-gold/50 focus:outline-none"

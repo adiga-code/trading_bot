@@ -27,6 +27,12 @@ export function PocketOrders() {
 
   useEffect(load, [load])
 
+  useEffect(() => {
+    if (!selected) return
+    document.body.classList.add('admin-sheet-open')
+    return () => document.body.classList.remove('admin-sheet-open')
+  }, [selected])
+
   const fulfill = async () => {
     if (!selected || !text.trim()) return
     setSending(true)
@@ -90,6 +96,10 @@ export function PocketOrders() {
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
+              onFocus={(e) => {
+                const el = e.currentTarget
+                setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)
+              }}
               rows={4}
               placeholder="Логин, пароль, ссылка — всё, что получит клиент"
               className="mt-3 w-full rounded-el border border-stroke bg-card2 px-3 py-2 text-[13px] placeholder:text-t3 focus:border-gold/50 focus:outline-none"

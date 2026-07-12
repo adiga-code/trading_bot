@@ -64,10 +64,16 @@ body {
 /* нижний sheet */
 @keyframes sheetUp {
   from { transform: translateY(100%); }
-  to { transform: translateY(0); }
+  to { transform: none; }
 }
 .sheet-in {
   animation: sheetUp 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* пока открыт bottom sheet админки — прячем таббар, иначе backdrop-filter
+   на нём почему-то перехватывает клики поверх шита несмотря на z-index */
+body.admin-sheet-open nav {
+  display: none;
 }
 
 ::-webkit-scrollbar {
