@@ -6,10 +6,12 @@ import { Dashboard } from './Dashboard'
 import { PocketOrders } from './PocketOrders'
 import { Purchases } from './Purchases'
 import { Users } from './Users'
+import { VipUsers } from './VipUsers'
 
 const SECTIONS = [
   { id: 'dashboard', label: 'Дашборд' },
   { id: 'users', label: 'Юзеры' },
+  { id: 'vip', label: 'VIP сейчас' },
   { id: 'purchases', label: 'Покупки' },
   { id: 'pocket', label: 'Pocket' },
   { id: 'broadcast', label: 'Рассылка' },
@@ -44,6 +46,7 @@ export function Admin({ config }: { config: AppConfig | null }) {
       <div className="mt-3 px-4">
         {section === 'dashboard' && <Dashboard />}
         {section === 'users' && <Users config={config} />}
+        {section === 'vip' && <VipUsers config={config} />}
         {section === 'purchases' && <Purchases />}
         {section === 'pocket' && <PocketOrders />}
         {section === 'broadcast' && <Broadcast />}

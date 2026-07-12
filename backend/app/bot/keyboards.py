@@ -57,7 +57,7 @@ def vip_plans_kb(with_back: bool = False) -> InlineKeyboardMarkup:
 def pocket_tiers_kb(with_back: bool = False) -> InlineKeyboardMarkup:
     rows = [
         [InlineKeyboardButton(
-            text=f"платите {t.pay_usd:.0f}$ получаете {t.balance_usd:.0f}$",
+            text=f"{t.pay_usd:.0f}$ → {t.balance_usd:.0f}$",
             callback_data=f"pocket:{t.index}",
         )]
         for t in POCKET_TIERS

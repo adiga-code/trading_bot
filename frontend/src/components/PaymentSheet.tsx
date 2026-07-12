@@ -112,7 +112,7 @@ export function PaymentSheet({
     <>
       <div className="fixed inset-0 z-40 bg-black/60" onClick={onClose} />
       <div
-        className="sheet-in fixed bottom-0 left-0 right-0 z-50 mx-auto max-w-md rounded-t-[20px] border-t border-white/[0.08] bg-sheet"
+        className="sheet-in fixed bottom-0 left-0 right-0 z-50 mx-auto max-h-[85vh] max-w-md overflow-y-auto rounded-t-[20px] border-t border-white/[0.08] bg-sheet"
         style={{ paddingBottom: 'calc(env(safe-area-inset-bottom) + 16px)' }}
       >
         <div className="mx-auto mt-2.5 h-1 w-10 rounded-full bg-t3/40" />

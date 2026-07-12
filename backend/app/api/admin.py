@@ -110,6 +110,21 @@ async def user_detail(user_id: int, session: AsyncSession = Depends(db_session))
     }
 
 
+@router.get("/vip-users")
+async def vip_users(session: AsyncSession = Depends(db_session)):
+    rows = await repo.list_vip_users(session)
+    out = []
+    for u, sub in rows:
+        plan = VIP_PLANS.get(sub.plan_key)
+        out.append({
+            **_user_out(u),
+            "plan_key": sub.plan_key,
+            "plan_name": plan.name if plan else sub.plan_key,
+            "expires_at": sub.expires_at.isoformat() if sub.expires_at else None,
+        })
+    return {"items": out}
+
+
 @router.get("/purchases")
 async def purchases(limit: int = 100, offset: int = 0, session: AsyncSession = Depends(db_session)):
     rows = await repo.list_purchases(session, limit=min(limit, 200), offset=offset)
