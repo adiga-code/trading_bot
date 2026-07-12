@@ -80,6 +80,10 @@ def payment_methods_kb(product_type: str, plan_key: str, back_cb: str) -> Inline
         ]
         rows.append(row)
     rows.append([InlineKeyboardButton(
+        text="💎 CryptoBot",
+        callback_data=f"pay:cryptobot:{product_type}:{plan_key}",
+    )])
+    rows.append([InlineKeyboardButton(
         text="Telegram Stars ⭐️",
         callback_data=f"pay:stars:{product_type}:{plan_key}",
     )])

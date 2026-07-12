@@ -73,6 +73,22 @@ async def test_confirm_pocket_payment_creates_order(db, fake_bot):
     assert order.user_id == user.id and order.balance_usd == 175.0
 
 
+async def test_confirm_cryptobot_payment_grants_subscription(db, fake_bot, vip_channel):
+    user = await _make_user(db)
+    payment = await repo.create_payment(
+        db, user_id=user.id, gateway="cryptobot", external_id="42",
+        product_type="vip", plan_key="1month", plan_name="VIP 1 Месяц", amount_usd=45.0,
+    )
+
+    await confirm_payment(fake_bot, db, payment)
+
+    assert payment.status == PaymentStatus.PAID
+    sub = await repo.active_subscription(db, user.id)
+    assert sub is not None and sub.status == SubscriptionStatus.ACTIVE
+    admin_msgs = [text for chat, text in fake_bot.messages if chat == 1]
+    assert any("CryptoBot" in t for t in admin_msgs)
+
+
 async def test_extension_adds_to_existing_subscription(db, fake_bot):
     user = await _make_user(db)
     sub1 = await grant_vip(fake_bot, db, user.id, "1month")

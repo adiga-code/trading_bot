@@ -41,6 +41,11 @@ async def test_pay_rejects_bad_initdata(client):
     assert r.status_code == 401
 
 
+async def test_pay_cryptobot_requires_auth(client):
+    r = await client.post("/api/pay/cryptobot", json={"type": "vip", "plan": "1month"})
+    assert r.status_code == 401
+
+
 async def test_admin_requires_admin_id(client):
     # валидный initData, но user_id=42 не входит в ADMIN_IDS=[1]
     r = await client.get(

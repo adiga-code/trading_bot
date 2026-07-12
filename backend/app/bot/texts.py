@@ -17,7 +17,10 @@ def vip_text() -> str:
     for p in VIP_PLANS.values():
         period = f"{p.months} мес." if p.months else "Навсегда"
         lines.append(f"• {period} — <b>{p.price_usd:.0f}$</b>  <s>{p.old_price_usd:.0f}$</s>")
-    lines.append("\n💳 Оплата: криптовалюта (BTC, ETH, USDT, TON, SOL и др.) или Telegram Stars ⭐️")
+    lines.append(
+        "\n💳 Оплата: криптовалюта (BTC, ETH, USDT, TON, SOL и др.), "
+        "CryptoBot 💎 или Telegram Stars ⭐️"
+    )
     lines.append("Доступ выдаётся после подтверждения оплаты.")
     return "\n".join(lines)
 
@@ -37,10 +40,24 @@ def payment_method_text(plan_name: str) -> str:
     return (
         "💳 <b>Выберите способ оплаты:</b>\n\n"
         f"📦 {plan_name}\n\n"
-        "Оплата: криптовалюта (BTC, ETH, USDT, TON, SOL и др.) "
-        "или Telegram Stars ⭐️\n"
+        "Оплата: криптовалюта (BTC, ETH, USDT, TON, SOL и др.), "
+        "CryptoBot 💎 или Telegram Stars ⭐️\n"
         "Доступ выдаётся после подтверждения оплаты."
     )
+
+
+def cryptobot_invoice_text(plan_name: str, amount_usd: float, expires_at: str) -> str:
+    text = (
+        "💎 <b>Счёт в CryptoBot создан!</b>\n\n"
+        f"📦 {plan_name}\n"
+        f"💵 Сумма: <b>{amount_usd:.2f} USD</b>\n"
+        "\nМонету для оплаты (BTC, USDT, TON и др.) выберите прямо на странице CryptoBot.\n"
+    )
+    if expires_at:
+        pretty = expires_at[:16].replace("T", " ")
+        text += f"\n⏰ Действует до: {pretty} UTC\n"
+    text += "\n🔄 Бот автоматически проверит оплату и уведомит вас."
+    return text
 
 
 def fmt_crypto(amount_str: str) -> str:

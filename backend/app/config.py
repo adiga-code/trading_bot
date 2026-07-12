@@ -29,6 +29,10 @@ class Settings(BaseSettings):
     gate2328_base_url: str = "https://api.2328.io/api/v1"
     payment_callback_url: str = ""
 
+    # CryptoBot (@CryptoBot Crypto Pay API) — токен приложения из Crypto Pay → My Apps
+    cryptobot_api_token: str = ""
+    cryptobot_base_url: str = "https://pay.crypt.bot/api"
+
     # Инфраструктура
     database_url: str = "sqlite+aiosqlite:///./data/bot.db"
     port: int = 8080

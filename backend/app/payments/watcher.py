@@ -14,7 +14,9 @@ from aiogram import Bot
 from app.db import repo
 from app.db.models import PaymentStatus, utcnow
 from app.db.session import get_sessionmaker
-from app.payments.base import FINAL_STATUSES, PAID_STATUSES
+from app.payments import cryptobot as cryptobot_module
+from app.payments.base import FINAL_STATUSES, PAID_STATUSES, PENDING_TTL_SECONDS
+from app.payments.cryptobot import CryptoBot
 from app.payments.gate2328 import Gate2328
 from app.services.fulfillment import confirm_payment
 from app.services.http import get_http_session
@@ -22,12 +24,13 @@ from app.services.http import get_http_session
 logger = logging.getLogger(__name__)
 
 CHECK_INTERVAL = 30           # сек между проверками
-PAYMENT_TTL = timedelta(hours=2)  # pending старше — помечаем истёкшим
+PAYMENT_TTL = timedelta(seconds=PENDING_TTL_SECONDS)  # pending старше — помечаем истёкшим
 
 
 async def _check_once(bot: Bot) -> None:
     http = get_http_session()
     gate2328 = Gate2328(http)
+    cryptobot = CryptoBot(http)
 
     async with get_sessionmaker()() as session:
         for payment in await repo.pending_payments(session):
@@ -42,6 +45,15 @@ async def _check_once(bot: Bot) -> None:
                 if status in PAID_STATUSES:
                     await confirm_payment(bot, session, payment)
                 elif status in FINAL_STATUSES:
+                    await repo.set_payment_status(session, payment, PaymentStatus.CANCELLED)
+
+            elif payment.gateway == "cryptobot":
+                status = await cryptobot.get_status(payment.external_id)
+                if status is None:
+                    continue
+                if status in cryptobot_module.PAID_STATUSES:
+                    await confirm_payment(bot, session, payment)
+                elif status in cryptobot_module.FINAL_STATUSES:
                     await repo.set_payment_status(session, payment, PaymentStatus.CANCELLED)
 
 
