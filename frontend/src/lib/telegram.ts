@@ -29,8 +29,8 @@ export function initTelegram() {
   try {
     tg.ready()
     tg.expand()
-    tg.setHeaderColor('#0B0E14')
-    tg.setBackgroundColor('#0B0E14')
+    tg.setHeaderColor('#000000')
+    tg.setBackgroundColor('#000000')
   } catch {
     /* старые клиенты не знают части методов */
   }

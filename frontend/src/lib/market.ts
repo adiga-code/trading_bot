@@ -51,11 +51,11 @@ export async function loadHomeMarkets(): Promise<Market[]> {
   try {
     const metals = await fetch('/api/metals').then((r) => r.json())
     out.push({
-      symbol: 'XAU', name: 'Золото', price: metals?.gold?.price ?? null, pct: null,
+      symbol: 'XAU', name: 'Gold', price: metals?.gold?.price ?? null, pct: null,
       closes: [], kind: 'metal', metalKey: 'gold', ysym: 'GC=F',
     })
     out.push({
-      symbol: 'XAG', name: 'Серебро', price: metals?.silver?.price ?? null, pct: null,
+      symbol: 'XAG', name: 'Silver', price: metals?.silver?.price ?? null, pct: null,
       closes: [], kind: 'metal', metalKey: 'silver', ysym: 'SI=F',
     })
   } catch {

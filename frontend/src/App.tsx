@@ -33,6 +33,11 @@ export default function App() {
     return () => clearInterval(t)
   }, [])
 
+  // при переключении вкладки экран должен начинаться сверху, а не с той же прокрутки
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [tab])
+
   return (
     <ToastProvider>
       <Splash />

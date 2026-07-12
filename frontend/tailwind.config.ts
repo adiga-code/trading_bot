@@ -6,7 +6,7 @@ export default {
   theme: {
     extend: {
       colors: {
-        bg: '#0B0E14',
+        bg: '#000000',
         card: '#15171C',
         // sheet keeps the previous card color, dedicated to bottom sheets/modals
         sheet: '#12161F',
