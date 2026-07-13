@@ -130,6 +130,20 @@ async def pending_payments(session: AsyncSession) -> list[Payment]:
     return list(res.scalars())
 
 
+async def get_pending_payment_by_external_id(
+    session: AsyncSession, gateway: str, external_id: str,
+) -> Payment | None:
+    """Поиск pending-платежа по ID шлюза — нужен обработчику вебхука NicePay."""
+    res = await session.execute(
+        select(Payment).where(
+            Payment.gateway == gateway,
+            Payment.external_id == external_id,
+            Payment.status == PaymentStatus.PENDING,
+        )
+    )
+    return res.scalars().first()
+
+
 async def set_payment_status(session: AsyncSession, payment: Payment, status: str) -> None:
     payment.status = status
     await session.commit()

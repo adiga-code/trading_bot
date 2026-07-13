@@ -10,7 +10,7 @@ from app import runtime
 from app.api.auth import WebAppUser, current_user
 from app.api.deps import db_session
 from app.db import repo
-from app.payments.base import GatewayError
+from app.payments.base import GatewayError, Invoice
 from app.plans import resolve_stars
 from app.services import payments as payment_service
 
@@ -29,9 +29,26 @@ class CryptoBotRequest(BaseModel):
     plan: str
 
 
+class NicePayRequest(BaseModel):
+    type: str            # vip | pocket
+    plan: str
+
+
 class StarsRequest(BaseModel):
     type: str
     plan: str
+
+
+def _invoice_response(invoice: Invoice) -> dict:
+    return {
+        "url": invoice.pay_url,
+        "tg_link": invoice.tg_link,
+        "address": invoice.address,
+        "payer_amount": invoice.payer_amount or "?",
+        "payer_currency": invoice.payer_currency,
+        "uuid": invoice.external_id,
+        "expires_at": invoice.expires_at,
+    }
 
 
 @router.post("/pay")
@@ -53,15 +70,7 @@ async def create_pay(
     except GatewayError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    return {
-        "url": invoice.pay_url,
-        "tg_link": invoice.tg_link,
-        "address": invoice.address,
-        "payer_amount": invoice.payer_amount or "?",
-        "payer_currency": invoice.payer_currency,
-        "uuid": invoice.external_id,
-        "expires_at": invoice.expires_at,
-    }
+    return _invoice_response(invoice)
 
 
 @router.post("/pay/cryptobot")
@@ -81,15 +90,29 @@ async def create_cryptobot_pay(
     except GatewayError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
 
-    return {
-        "url": invoice.pay_url,
-        "tg_link": invoice.tg_link,
-        "address": invoice.address,
-        "payer_amount": invoice.payer_amount or "?",
-        "payer_currency": invoice.payer_currency,
-        "uuid": invoice.external_id,
-        "expires_at": invoice.expires_at,
-    }
+    return _invoice_response(invoice)
+
+
+@router.post("/pay/nicepay")
+async def create_nicepay_pay(
+    body: NicePayRequest,
+    user: WebAppUser = Depends(current_user),
+    session: AsyncSession = Depends(db_session),
+):
+    await repo.upsert_user(session, user.id, user.username, user.first_name, user.last_name)
+    customer = f"@{user.username}" if user.username else f"tg{user.id}"
+    try:
+        payment, invoice = await payment_service.create_nicepay_invoice(
+            session,
+            user_id=user.id,
+            product_type=body.type,
+            plan_key=body.plan,
+            customer=customer,
+        )
+    except GatewayError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+
+    return _invoice_response(invoice)
 
 
 @router.post("/stars")
