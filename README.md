@@ -16,8 +16,8 @@
   120$ → 175$ (+46%), 230$ → 350$ (+52%)
 - 💳 **Оплата**: криптовалюта через 2328.io (BTC, ETH, USDT в трёх сетях, USDC,
   SOL, TON, BNB, MATIC, TRX, XMR), CryptoBot 💎 (@CryptoBot, монету выбирает
-  сам покупатель) или Telegram Stars ⭐️ — бот сам проверяет оплату и
-  уведомляет о результате
+  сам покупатель), СБП 🏦 через NicePay.io или Telegram Stars ⭐️ — бот сам
+  проверяет оплату и уведомляет о результате
 - 📈 **Mini App**: живые цены Binance + золото/серебро, свечные графики с
   таймфреймами, покупка и оплата в 2 тапа, тот же функционал что и в боте
 - 🆘 **Поддержка**: кнопка ведёт в личку @forextrdk — переписка идёт напрямую,
@@ -77,7 +77,7 @@ backend/
     plans.py         # ЕДИНСТВЕННОЕ место с ценами
     db/              # SQLAlchemy 2.0 async: модели, сессии, запросы
     bot/             # aiogram 3: роутеры, клавиатуры, middleware
-    payments/        # шлюзы 2328.io и CryptoBot + watcher статусов
+    payments/        # шлюзы 2328.io, CryptoBot, NicePay (СБП) + watcher статусов
     api/             # auth (initData), payments, market, admin
     services/        # подписки (автовыдача), fulfillment, рынок
   scripts/migrate_old_db.py  # перенос данных из старой bot_database.db
@@ -145,6 +145,16 @@ docker compose up --build
 3. Готово: инвайты и удаление из канала работают автоматически
 
 Если `VIP_CHANNEL_ID` пуст — автовыдача выключена, доступ выдаётся вручную.
+
+## Настройка NicePay (СБП)
+
+1. В личном кабинете NicePay возьми `merchant_id` и `secret` → `NICEPAY_MERCHANT_ID`, `NICEPAY_SECRET_KEY`
+2. Там же укажи URL вебхука: `https://твой-домен/api/webhooks/nicepay`
+3. Задай текущий курс USD→RUB в `NICEPAY_USD_RUB_RATE` — он не подтягивается
+   автоматически, обновляй вручную по мере изменения курса
+
+Если `NICEPAY_USD_RUB_RATE` пуст/0 — кнопка СБП будет показывать ошибку
+создания счёта вместо реальной оплаты.
 
 ## ⚠️ Перед запуском: перевыпусти секреты
 

@@ -14,6 +14,7 @@ from app import runtime
 from app.api import admin as admin_api
 from app.api import market as market_api
 from app.api import payments as payments_api
+from app.api import webhooks as webhooks_api
 from app.bot.setup import create_bot, create_dispatcher, on_startup
 from app.config import get_settings
 from app.db.session import init_db
@@ -64,6 +65,7 @@ app = FastAPI(title="Forex Trd'K", lifespan=lifespan, docs_url=None, redoc_url=N
 
 app.include_router(market_api.router)
 app.include_router(payments_api.router)
+app.include_router(webhooks_api.router)
 app.include_router(admin_api.router)
 
 

@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 GATEWAY_LABELS = {
     "gate2328": "криптовалюта (2328.io)",
     "cryptobot": "CryptoBot 💎",
+    "nicepay": "СБП (NicePay)",
     "stars": "Telegram Stars ⭐️",
 }
 

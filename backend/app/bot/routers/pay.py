@@ -86,6 +86,41 @@ async def pay_cryptobot(query: CallbackQuery, session) -> None:
     )
 
 
+@router.callback_query(F.data.startswith("pay:nicepay:"))
+async def pay_nicepay(query: CallbackQuery, session) -> None:
+    # pay:nicepay:{type}:{plan}
+    await query.answer()
+    parts = query.data.split(":")
+    if len(parts) != 4:
+        return
+    _, _, product_type, plan_key = parts
+
+    user = query.from_user
+    customer = f"@{user.username}" if user.username else f"tg{user.id}"
+
+    await query.message.edit_text("⏳ <b>Создаём счёт на оплату…</b>", parse_mode="HTML")
+    try:
+        payment, invoice = await payment_service.create_nicepay_invoice(
+            session,
+            user_id=user.id,
+            product_type=product_type,
+            plan_key=plan_key,
+            customer=customer,
+        )
+    except GatewayError as exc:
+        await query.message.edit_text(
+            f"❌ <b>Ошибка создания счёта:</b>\n<code>{exc}</code>\n\nПопробуйте другой способ оплаты.",
+            reply_markup=keyboards.back_button(), parse_mode="HTML",
+        )
+        return
+
+    await query.message.edit_text(
+        texts.nicepay_invoice_text(payment.plan_name, invoice.payer_amount, invoice.expires_at),
+        reply_markup=keyboards.invoice_kb(invoice.pay_url),
+        parse_mode="HTML",
+    )
+
+
 @router.callback_query(F.data.startswith("pay:stars:"))
 async def pay_stars(query: CallbackQuery) -> None:
     # pay:stars:{type}:{plan}

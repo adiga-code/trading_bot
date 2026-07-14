@@ -33,6 +33,14 @@ class Settings(BaseSettings):
     cryptobot_api_token: str = ""
     cryptobot_base_url: str = "https://pay.crypt.bot/api"
 
+    # NicePay (nicepay.io) — СБП. merchant_id/secret из настроек мерчанта.
+    nicepay_merchant_id: str = ""
+    nicepay_secret_key: str = ""
+    nicepay_base_url: str = "https://nicepay.io/public/api"
+    # Курс USD→RUB для конвертации тарифов (СБП принимает только рубли).
+    # 0 = не настроен — создание счёта тогда будет падать с понятной ошибкой.
+    nicepay_usd_rub_rate: float = 0.0
+
     # Инфраструктура
     database_url: str = "sqlite+aiosqlite:///./data/bot.db"
     port: int = 8080

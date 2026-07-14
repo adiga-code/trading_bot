@@ -46,6 +46,40 @@ async def test_pay_cryptobot_requires_auth(client):
     assert r.status_code == 401
 
 
+async def test_pay_nicepay_requires_auth(client):
+    r = await client.post("/api/pay/nicepay", json={"type": "vip", "plan": "1month"})
+    assert r.status_code == 401
+
+
+async def test_nicepay_webhook_rejects_bad_hash(client, db, monkeypatch):
+    """Вебхук NicePay не требует initData — авторизация через подпись hash."""
+    from app.config import get_settings
+    monkeypatch.setenv("NICEPAY_SECRET_KEY", "test-secret")
+    get_settings.cache_clear()
+
+    from app.db import repo
+    from app.db.models import PaymentStatus
+
+    user = await repo.upsert_user(db, 100, "buyer", "Buy", "Er")
+    payment = await repo.create_payment(
+        db, user_id=user.id, gateway="nicepay", external_id="pay123",
+        product_type="vip", plan_key="1month", plan_name="VIP 1 Месяц", amount_usd=45.0,
+    )
+
+    r = await client.get("/api/webhooks/nicepay", params={
+        "result": "success", "payment_id": "pay123", "merchant_id": "m",
+        "order_id": "1", "amount": "1", "amount_currency": "RUB",
+        "profit": "1", "profit_currency": "RUB", "method": "sbp_rub",
+        "hash": "deadbeef",
+    })
+    assert r.status_code == 200
+    assert "error" in r.json()
+
+    await db.refresh(payment)
+    assert payment.status == PaymentStatus.PENDING
+    get_settings.cache_clear()
+
+
 async def test_admin_requires_admin_id(client):
     # валидный initData, но user_id=42 не входит в ADMIN_IDS=[1]
     r = await client.get(
