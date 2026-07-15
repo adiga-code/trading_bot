@@ -137,17 +137,26 @@ export function Home({
           <div className="mt-2 font-display text-[15px] font-bold">Готовые аккаунты с балансом</div>
           <div className="mt-0.5 text-[12px] text-t2">Выгода до +52%</div>
         </button>
-      </div>
 
-      {/* поддержка */}
-      {config && (
-        <button
-          onClick={() => openExternal(`https://t.me/${config.support_username}`)}
-          className="pt-1 text-center text-[12px] text-t3"
-        >
-          Поддержка · <span className="text-t2">@{config.support_username}</span>
-        </button>
-      )}
+        {config && (
+          <button
+            onClick={() => {
+              haptic('light')
+              openExternal(`https://t.me/${config.support_username}`)
+            }}
+            className="relative w-full overflow-hidden rounded-card bg-[#22110F] p-4 text-left shadow-[0_0_20px_rgba(248,113,113,0.14),0_6px_16px_rgba(0,0,0,0.35)] active:scale-[0.99]"
+          >
+            <div className="flex items-center justify-between">
+              <span className="rounded-md bg-down px-2.5 py-1 text-[10px] font-bold tracking-widest text-bg">
+                ПОДДЕРЖКА
+              </span>
+              <Arrow />
+            </div>
+            <div className="mt-2 font-display text-[15px] font-bold">Если возник вопрос</div>
+            <div className="mt-0.5 text-[12px] text-t2">Ответим в ближайшее время</div>
+          </button>
+        )}
+      </div>
 
       {config && (
         <div className="mt-5 flex justify-center gap-4 px-4 text-[11px] text-t3">

@@ -70,6 +70,10 @@ def pocket_tiers_kb(with_back: bool = False) -> InlineKeyboardMarkup:
 def payment_methods_kb(product_type: str, plan_key: str, back_cb: str) -> InlineKeyboardMarkup:
     """Сетка криптовалют + Stars. Формат cb: pay:crypto:{type}:{plan}:{cur}:{net}"""
     rows: list[list[InlineKeyboardButton]] = []
+    rows.append([InlineKeyboardButton(
+        text="🏦 СБП",
+        callback_data=f"pay:nicepay:{product_type}:{plan_key}",
+    )])
     for i in range(0, len(CRYPTO_OPTIONS), 2):
         row = [
             InlineKeyboardButton(
@@ -82,10 +86,6 @@ def payment_methods_kb(product_type: str, plan_key: str, back_cb: str) -> Inline
     rows.append([InlineKeyboardButton(
         text="💎 CryptoBot",
         callback_data=f"pay:cryptobot:{product_type}:{plan_key}",
-    )])
-    rows.append([InlineKeyboardButton(
-        text="🏦 СБП",
-        callback_data=f"pay:nicepay:{product_type}:{plan_key}",
     )])
     rows.append([InlineKeyboardButton(
         text="Telegram Stars ⭐️",
